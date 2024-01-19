@@ -5,7 +5,7 @@ import fcntl
 import time
 
 import flask
-from flask.globals import request_ctx as _request_ctx_stack
+from flask.globals import request_ctx
 
 LOCK_POLL_SECS = 0.02
 
@@ -58,13 +58,13 @@ class _Shelve(object):
             fileno = self._lock.acquire_write_lock()
             writer = self._open_db(mode)
             writer.fileno = fileno
-            _request_ctx_stack.top.shelve_writer = writer
+            _request_ctx.shelve_writer = writer
             return writer
         else:
             fileno = self._lock.acquire_read_lock()
             reader = self._open_db(mode)
             reader.fileno = fileno
-            _request_ctx_stack.top.shelve_reader = reader
+            _request_ctx.shelve_reader = reader
             return reader
 
     def _is_write_mode(self, mode):
@@ -80,7 +80,7 @@ class _Shelve(object):
         )
 
     def close_db(self, ignore_arg):
-        top = _request_ctx_stack.top
+        top = _request_ctx
         if hasattr(top, 'shelve_writer'):
             writer = top.shelve_writer
             writer.close()
