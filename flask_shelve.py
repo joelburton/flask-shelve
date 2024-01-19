@@ -5,8 +5,7 @@ import fcntl
 import time
 
 import flask
-from flask import _request_ctx_stack
-
+from flask.globals import request_ctx as _request_ctx_stack
 
 LOCK_POLL_SECS = 0.02
 
